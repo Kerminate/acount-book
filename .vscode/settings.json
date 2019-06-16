@@ -1,0 +1,39 @@
+{
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": true,
+    "[javascript]": {
+      "editor.tabSize": 2,
+      "editor.formatOnPaste": true,
+      "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+      "editor.formatOnSave": false,
+      "editor.tabSize": 2,
+    },
+    "[json]": {
+      "editor.tabSize": 2,
+      "editor.formatOnSave": true
+    },
+    "eslint.alwaysShowStatus": true,
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "html"
+    ],
+    "eslint.options": {
+      "extensions": [
+        ".js",
+        ".jsx"
+      ]
+    },
+    "standard.autoFixOnSave": false,
+    "javascript.suggestionActions.enabled": true,
+    "fileheader.customMade": {
+      "Description": "",
+      "Author": "kepeilin",
+      "Date": "Do not edit" // 文件创建时间(不变)
+    }
+  }
+  

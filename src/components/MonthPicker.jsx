@@ -1,20 +1,21 @@
-import React from 'react'
+import React from 'react';
 import PropTypes from 'prop-types';
-import { padLeft } from '../utility'
+import { padLeft } from '../utility';
 
 class MonthPicker extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      isOpen: false
-    }
+      isOpen: false,
+    };
   }
 
   toggleDropdown = (event) => {
+    const { isOpen } = this.state;
     event.preventDefault();
     this.setState({
-      isOpen: !this.state.isOpen
-    })
+      isOpen: !isOpen,
+    });
   }
 
   render() {
@@ -24,28 +25,31 @@ class MonthPicker extends React.Component {
       <div className="dropdown month-picker-component">
         <h4>选择月份</h4>
         <button
+          type="button"
           className="btn btn-lg btn-secondary dropdown-toggle"
           onClick={this.toggleDropdown}
         >
           {`${year}年 ${padLeft(month)}月`}
         </button>
         {
-          isOpen &&
-          <div className="dropdown-menu" style={{display: 'block'}}>
+          isOpen
+          && (
+          <div className="dropdown-menu" style={{ display: 'block' }}>
             <h2>Hello world</h2>
           </div>
+          )
         }
       </div>
-    )
+    );
   }
 }
 
 MonthPicker.propTypes = {
-  onDeleteItem: PropTypes.func.isRequired,
-}
+  year: PropTypes.number.isRequired,
+  month: PropTypes.number.isRequired,
+};
 
 MonthPicker.defaultProps = {
-  onDeleteItem: () => {}
-}
+};
 
 export default MonthPicker;
