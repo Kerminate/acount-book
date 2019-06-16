@@ -1,0 +1,9 @@
+.nav-link {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.active {
+  color: #40a9ff;
+}
