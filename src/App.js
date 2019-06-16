@@ -1,8 +1,10 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import PriceList from './components/PriceList'
-import ViewTabs from './components/ViewTabs'
-import { LIST_VIEW, CHART_VIEW } from './utility'
+import PriceList from './components/PriceList';
+import ViewTabs from './components/ViewTabs';
+import MonthPicker from './components/MonthPicker';
+import { LIST_VIEW, CHART_VIEW } from './utility';
 
 const items = [
   {
@@ -45,6 +47,10 @@ function App() {
         onTabChange={(view) => {
           console.log(view);
         }}
+      />
+      <MonthPicker
+        year={2019}
+        month={5}
       />
     </div>
   );
