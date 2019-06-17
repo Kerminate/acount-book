@@ -8,7 +8,6 @@ const generateLinkClass = (current, view) => ((current === view) ? 'nav-link act
 const ViewTab = ({ activeTab, onTabChange }) => (
   <ul className="nav nav-tabs nav-fill my-4">
     <li className="nav-item">
-      {/* eslint-disable-next-line */}
       <p
         className={generateLinkClass(activeTab, LIST_VIEW)}
         onClick={(event) => {
@@ -26,7 +25,6 @@ const ViewTab = ({ activeTab, onTabChange }) => (
       </p>
     </li>
     <li className="nav-item">
-      {/* eslint-disable-next-line */}
       <p
         className={generateLinkClass(activeTab, CHART_VIEW)}
         onClick={(event) => {
@@ -40,7 +38,7 @@ const ViewTab = ({ activeTab, onTabChange }) => (
           color="#007bff"
           icon="ios-pie"
         />
-          列表模式
+          图表模式
       </p>
     </li>
   </ul>
@@ -49,9 +47,6 @@ const ViewTab = ({ activeTab, onTabChange }) => (
 ViewTab.propTypes = {
   activeTab: PropTypes.string.isRequired,
   onTabChange: PropTypes.func.isRequired,
-};
-
-ViewTab.defaultProps = {
 };
 
 export default ViewTab;

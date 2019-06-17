@@ -19,11 +19,10 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => (
         <span className="col-2 font-weight-bold">
           {item.category.type === 'income' ? '+' : '-'}
           {item.price}
-元
+          元
         </span>
         <span className="col-2">{item.date}</span>
-        {/* eslint-disable-next-line */}
-        <a
+        <div
           className="col-1"
           role="button"
           onClick={() => onModifyItem(item)}
@@ -35,9 +34,8 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => (
             color="#fff"
             icon="ios-create-outline"
           />
-        </a>
-        {/* eslint-disable-next-line */}
-        <a
+        </div>
+        <div
           className="col-1"
           role="button"
           onClick={() => onDeleteItem(item)}
@@ -49,14 +47,14 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => (
             color="#fff"
             icon="ios-close"
           />
-        </a>
+        </div>
       </li>
     )) }
   </ul>
 );
 
 PriceList.propTypes = {
-  items: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
+  items: PropTypes.array.isRequired,
   onModifyItem: PropTypes.func.isRequired,
   onDeleteItem: PropTypes.func.isRequired,
 };
