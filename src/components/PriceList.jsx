@@ -22,7 +22,7 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => (
           元
         </span>
         <span className="col-2">{item.date}</span>
-        <div
+        <a
           className="col-1"
           role="button"
           onClick={() => onModifyItem(item)}
@@ -34,8 +34,8 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => (
             color="#fff"
             icon="ios-create-outline"
           />
-        </div>
-        <div
+        </a>
+        <a
           className="col-1"
           role="button"
           onClick={() => onDeleteItem(item)}
@@ -47,7 +47,7 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => (
             color="#fff"
             icon="ios-close"
           />
-        </div>
+        </a>
       </li>
     )) }
   </ul>

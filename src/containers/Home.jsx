@@ -10,7 +10,7 @@ import {
 } from '../utility';
 import logo from '../logo.svg';
 
-const categories = {
+export const categories = {
   1: {
     id: '1',
     name: '旅行',
@@ -25,7 +25,7 @@ const categories = {
   },
 };
 
-const accItems = [
+export const accItems = [
   {
     id: 1,
     title: '去云南旅游',
