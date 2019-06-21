@@ -68,7 +68,7 @@ class MonthPicker extends React.Component {
                   ))
                 }
               </div>
-              <div className="col">
+              <div className="col months-range">
                 {
                   monthRange.map((monthNumber, index) => (
                     <div
@@ -77,7 +77,7 @@ class MonthPicker extends React.Component {
                       className={(monthNumber === month) ? 'dropdown-item active text-white' : 'dropdown-item'}
                       onClick={e => this.selectMonth(e, monthNumber)}
                     >
-                      {`${padLeft(monthNumber)} 年`}
+                      {`${padLeft(monthNumber)} 月`}
                     </div>
                   ))
                 }
