@@ -1,6 +1,9 @@
 {
   "extends": ["airbnb"],
   "parser": "babel-eslint",
+  "globals": {
+    "document": true
+  },
   "rules": {
     "no-plusplus": 0,
     "jsx-a11y/interactive-supports-focus": 0,
