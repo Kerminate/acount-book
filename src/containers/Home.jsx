@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
+import Ionicon from 'react-ionicons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PriceList from '../components/PriceList';
-import ViewTab from '../components/ViewTab';
 import MonthPicker from '../components/MonthPicker';
 import TotalPrice from '../components/TotalPrice';
 import CreateBtn from '../components/CreateBtn';
+import { Tabs, Tab } from '../components/Tabs';
 import {
-  LIST_VIEW, TYPE_OUTCOME, parseToYearAndMonth, padLeft,
+  LIST_VIEW, TYPE_OUTCOME, parseToYearAndMonth, padLeft, CHART_VIEW,
 } from '../utility';
 import logo from '../logo.svg';
 
@@ -57,19 +58,21 @@ const newItem = {
   cid: 1,
 };
 
+const tabsText = [LIST_VIEW, CHART_VIEW];
+
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       items: accItems,
       currentDate: parseToYearAndMonth(),
-      tableView: LIST_VIEW,
+      tableView: tabsText[0],
     };
   }
 
-  changeView = (view) => {
+  changeView = (index) => {
     this.setState({
-      tableView: view,
+      tableView: tabsText[index],
     });
   }
 
@@ -145,10 +148,26 @@ class Home extends Component {
           </div>
         </div>
         <div className="content-area py-3 px-3">
-          <ViewTab
-            activeTab={tableView}
-            onTabChange={this.changeView}
-          />
+          <Tabs activeIndex={0} onTabChange={this.changeView}>
+            <Tab>
+              <Ionicon
+                className="rounded-circle mr-2"
+                fontSize="25px"
+                color="#007bff"
+                icon="ios-paper"
+              />
+              列表模式
+            </Tab>
+            <Tab>
+              <Ionicon
+                className="rounded-circle mr-2"
+                fontSize="25px"
+                color="#007bff"
+                icon="ios-pie"
+              />
+              图表模式
+            </Tab>
+          </Tabs>
           <CreateBtn onClick={this.createItem} />
           { tableView === LIST_VIEW
             && (
