@@ -28,3 +28,10 @@ export const isValidDate = (dateString) => {
   if (Number.isNaN(d.getTime())) return false;
   return d.toISOString().slice(0, 10) === dateString;
 };
+
+export const flatternArr = arr => arr.reduce((map, item) => {
+  map[item.id] = item;
+  return map;
+}, {});
+
+export const ID = () => `_${Math.random.toString(36).substr(2, 9)}`;

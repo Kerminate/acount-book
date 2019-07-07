@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import Ionicon from 'react-ionicons';
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PriceList from '../components/PriceList';
 import MonthPicker from '../components/MonthPicker';
@@ -10,6 +12,8 @@ import {
   LIST_VIEW, TYPE_OUTCOME, parseToYearAndMonth, padLeft, CHART_VIEW,
 } from '../utility';
 import logo from '../logo.svg';
+// eslint-disable-next-line import/no-cycle
+import withContext from '../WithContext';
 
 export const categories = {
   1: {
@@ -50,13 +54,6 @@ export const accItems = [
   },
 ];
 
-const newItem = {
-  id: 4,
-  title: '新添加的项目',
-  price: 300,
-  date: '2019-06-10',
-  cid: 1,
-};
 
 const tabsText = [LIST_VIEW, CHART_VIEW];
 
@@ -82,37 +79,21 @@ class Home extends Component {
     });
   }
 
-  modifyItem = (modifiedItem) => {
-    const { items } = this.state;
-    const modifiedItems = items.map((item) => {
-      if (item.id === modifiedItem.id) {
-        return { ...item, title: '更新后的标题' };
-      }
-      return item;
-    });
-    this.setState({
-      items: modifiedItems,
-    });
+  modifyItem = (item) => {
+    this.props.history.push(`/edit/${item.id}`);
   }
 
-  deleteItem = (deletedItem) => {
-    const { items } = this.state;
-    const filteredItems = items.filter(item => item.id !== deletedItem.id);
-    this.setState({
-      items: filteredItems,
-    });
+  deleteItem = (item) => {
+    this.props.actions.deleteItem(item);
   }
 
   createItem = () => {
-    this.setState(prevState => ({
-      items: [newItem, ...prevState.items],
-    }));
+    this.props.history.push('/create');
   }
 
   render() {
     const { items, currentDate, tableView } = this.state;
     const itemsWithCategory = items.map((item) => {
-      // eslint-disable-next-line no-param-reassign
       item.category = categories[item.cid];
       return item;
     }).filter(item => item.date.includes(`${currentDate.year}-${padLeft(currentDate.month)}`));
@@ -184,4 +165,9 @@ class Home extends Component {
   }
 }
 
-export default Home;
+Home.propTypes = {
+  history: PropTypes.any.isRequired,
+  actions: PropTypes.any.isRequired,
+};
+
+export default withRouter(withContext(Home));
