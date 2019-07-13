@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import axios from 'axios';
 import Home from './containers/Home';
 import Create from './containers/Create';
-import { testItems, testCategories } from './testData';
 import { flatternArr, ID, parseToYearAndMonth } from './utility';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -12,16 +12,52 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: flatternArr(testItems),
-      categories: flatternArr(testCategories),
+      items: {},
+      categories: {},
+      isLoading: false,
+      currentDate: parseToYearAndMonth(),
     };
     this.actions = {
-      deleteItem: (item) => {
+      getInitalData: async () => {
+        this.setState({
+          isLoading: true,
+        });
+        const { currentDate } = this.state;
+        const getURLWithData = `/items?monthCategory=${currentDate.year}-${currentDate.month}&_sort=timestamp&_order=desc`;
+        const results = await Promise.all([axios.get('/categories'), axios.get(getURLWithData)]);
+        const [categories, items] = results;
+        this.setState({
+          items: flatternArr(items.data),
+          categories: flatternArr(categories.data),
+          isLoading: false,
+        });
+        return items;
+      },
+      selectNewMonth: async (year, month) => {
+        this.setState({
+          isLoading: true,
+        });
+        const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`;
+        const items = await axios.get(getURLWithData);
+        this.setState({
+          items: flatternArr(items.data),
+          currentDate: { year, month },
+          isLoading: false,
+        });
+        return items;
+      },
+      deleteItem: async (item) => {
+        this.setState({
+          isLoading: true,
+        });
+        const deleteItem = await axios.delete(`/items/${item.id}`);
         delete this.state.items[item.id];
         this.setState({
           // eslint-disable-next-line react/no-access-state-in-setstate
           items: this.state.items,
+          isLoading: false,
         });
+        return deleteItem;
       },
       createItem: (data, categoryId) => {
         const newId = ID();

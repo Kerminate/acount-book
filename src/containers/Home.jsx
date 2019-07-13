@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import PriceList from '../components/PriceList';
 import MonthPicker from '../components/MonthPicker';
 import TotalPrice from '../components/TotalPrice';
+import Loader from '../components/Loader';
 import CreateBtn from '../components/CreateBtn';
 import { Tabs, Tab } from '../components/Tabs';
 import {
@@ -67,6 +68,10 @@ class Home extends Component {
     };
   }
 
+  componentDidMount() {
+    this.props.actions.getInitalData();
+  }
+
   changeView = (index) => {
     this.setState({
       tableView: tabsText[index],
@@ -74,9 +79,7 @@ class Home extends Component {
   }
 
   changeDate = (year, month) => {
-    this.setState({
-      currentDate: { year, month },
-    });
+    this.props.actions.selectNewMonth(year, month);
   }
 
   modifyItem = (item) => {
@@ -92,11 +95,15 @@ class Home extends Component {
   }
 
   render() {
-    const { items, currentDate, tableView } = this.state;
-    const itemsWithCategory = items.map((item) => {
-      item.category = categories[item.cid];
-      return item;
-    }).filter(item => item.date.includes(`${currentDate.year}-${padLeft(currentDate.month)}`));
+    const { data } = this.props;
+    const {
+      items, categories, currentDate, isLoading,
+    } = data;
+    const { tableView } = this.state;
+    const itemsWithCategory = Object.keys(items).map((id) => {
+      items[id].category = categories[items[id].cid];
+      return items[id];
+    });
     let totalIncome = 0;
     let totalOutcome = 0;
     itemsWithCategory.forEach((item) => {
@@ -129,36 +136,43 @@ class Home extends Component {
           </div>
         </div>
         <div className="content-area py-3 px-3">
-          <Tabs activeIndex={0} onTabChange={this.changeView}>
-            <Tab>
-              <Ionicon
-                className="rounded-circle mr-2"
-                fontSize="25px"
-                color="#007bff"
-                icon="ios-paper"
-              />
-              列表模式
-            </Tab>
-            <Tab>
-              <Ionicon
-                className="rounded-circle mr-2"
-                fontSize="25px"
-                color="#007bff"
-                icon="ios-pie"
-              />
-              图表模式
-            </Tab>
-          </Tabs>
-          <CreateBtn onClick={this.createItem} />
-          { tableView === LIST_VIEW
+          { isLoading && <Loader /> }
+          { !isLoading
             && (
-            <PriceList
-              items={itemsWithCategory}
-              onModifyItem={this.modifyItem}
-              onDeleteItem={this.deleteItem}
-            />
+            <Fragment>
+              <Tabs activeIndex={0} onTabChange={this.changeView}>
+                <Tab>
+                  <Ionicon
+                    className="rounded-circle mr-2"
+                    fontSize="25px"
+                    color="#007bff"
+                    icon="ios-paper"
+                  />
+              列表模式
+                </Tab>
+                <Tab>
+                  <Ionicon
+                    className="rounded-circle mr-2"
+                    fontSize="25px"
+                    color="#007bff"
+                    icon="ios-pie"
+                  />
+              图表模式
+                </Tab>
+              </Tabs>
+              <CreateBtn onClick={this.createItem} />
+              { tableView === LIST_VIEW
+                && (
+                <PriceList
+                  items={itemsWithCategory}
+                  onModifyItem={this.modifyItem}
+                  onDeleteItem={this.deleteItem}
+                />
+                )
+              }
+            </Fragment>
             )
-          }
+           }
         </div>
       </Fragment>
     );

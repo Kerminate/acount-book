@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
@@ -14,11 +15,11 @@
     "react-scripts": "3.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently \"react-scripts start\" \"npm run mock\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "mock": "json-server --watch db.json"
+    "mock": "json-server --watch db.json --port 3004"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -38,11 +39,13 @@
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "babel-plugin-import": "^1.12.0",
+    "concurrently": "^4.1.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.17.3",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.13.0",
     "json-server": "^0.15.0"
-  }
+  },
+  "proxy": "http://localhost:3004"
 }
