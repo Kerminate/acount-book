@@ -10,60 +10,35 @@ import Loader from '../components/Loader';
 import CreateBtn from '../components/CreateBtn';
 import { Tabs, Tab } from '../components/Tabs';
 import {
-  LIST_VIEW, TYPE_OUTCOME, parseToYearAndMonth, padLeft, CHART_VIEW,
+  LIST_VIEW, TYPE_OUTCOME, CHART_VIEW, TYPE_INCOME,
 } from '../utility';
 import logo from '../logo.svg';
-// eslint-disable-next-line import/no-cycle
 import withContext from '../WithContext';
 
-export const categories = {
-  1: {
-    id: '1',
-    name: '旅行',
-    type: 'outcome',
-    iconName: 'ios-plane',
-  },
-  2: {
-    id: '2',
-    name: '理财',
-    type: 'income',
-    iconName: 'logo-yen',
-  },
-};
-
-export const accItems = [
-  {
-    id: 1,
-    title: '去云南旅游',
-    price: 200,
-    date: '2019-03-10',
-    cid: 1,
-  },
-  {
-    id: 2,
-    title: '去云南旅游',
-    price: 300,
-    date: '2019-06-10',
-    cid: 1,
-  },
-  {
-    id: 3,
-    title: '理财收入',
-    price: 200,
-    date: '2019-06-10',
-    cid: 2,
-  },
-];
-
-
 const tabsText = [LIST_VIEW, CHART_VIEW];
+
+const generateChartDataByCategory = (items, type = TYPE_OUTCOME) => {
+  const categoryMap = {};
+  items.filter(item => item.categories.type === type).forEach((item) => {
+    if (categoryMap[item.cid]) {
+      categoryMap[item.cid].value += (item.price * 1);
+      categoryMap[item.cid].items = [...categoryMap[item.cid].items, item.id];
+    } else {
+      categoryMap[item.cid] = {
+        category: item.category,
+        value: item.price * 1,
+        items: [item.id],
+      };
+    }
+  });
+  return Object.keys(categoryMap)
+    .map(mapKey => ({ ...categoryMap[mapKey], name: categoryMap[mapKey].category.name }));
+};
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: accItems,
-      currentDate: parseToYearAndMonth(),
       tableView: tabsText[0],
     };
   }
@@ -113,6 +88,9 @@ class Home extends Component {
         totalIncome += item.price;
       }
     });
+    // const chartOutcomDataByCategory = generateChartDataByCategory(itemsWithCategory, TYPE_OUTCOME);
+    // const chartIncomeDataByCategory = generateChartDataByCategory(itemsWithCategory, TYPE_INCOME);
+
     return (
       <Fragment>
         <div className="App-header">
@@ -148,7 +126,7 @@ class Home extends Component {
                     color="#007bff"
                     icon="ios-paper"
                   />
-              列表模式
+                  列表模式
                 </Tab>
                 <Tab>
                   <Ionicon
@@ -157,17 +135,24 @@ class Home extends Component {
                     color="#007bff"
                     icon="ios-pie"
                   />
-              图表模式
+                  图表模式
                 </Tab>
               </Tabs>
               <CreateBtn onClick={this.createItem} />
-              { tableView === LIST_VIEW
+              { tableView === LIST_VIEW && itemsWithCategory.length > 0
                 && (
                 <PriceList
                   items={itemsWithCategory}
                   onModifyItem={this.modifyItem}
                   onDeleteItem={this.deleteItem}
                 />
+                )
+              }
+              { tableView === LIST_VIEW && itemsWithCategory.length === 0
+                && (
+                <div className="alert alert-light text-center no-record">
+                  您还没有任何记账记录
+                </div>
                 )
               }
             </Fragment>
@@ -182,6 +167,7 @@ class Home extends Component {
 Home.propTypes = {
   history: PropTypes.any.isRequired,
   actions: PropTypes.any.isRequired,
+  data: PropTypes.any.isRequired,
 };
 
 export default withRouter(withContext(Home));

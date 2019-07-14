@@ -3,24 +3,14 @@ import Ionicon from 'react-ionicons';
 import PropTypes from 'prop-types';
 
 class CategorySelect extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selectedCategoryId: props.selectedCategory && props.selectedCategory.id,
-    };
-  }
-
   selectCategory = (event, category) => {
-    this.setState({
-      selectedCategoryId: category.id,
-    });
     this.props.onSelectCategory(category);
     event.preventDefault();
   }
 
   render() {
-    const { categories } = this.props;
-    const { selectedCategoryId } = this.state;
+    const { categories, selectedCategory } = this.props;
+    const selectedCategoryId = selectedCategory && selectedCategory.id;
     return (
       <div className="category-select-component">
         <div className="row">

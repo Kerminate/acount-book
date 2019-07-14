@@ -1,13 +1,15 @@
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable react/no-unused-state */
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import axios from 'axios';
 import Home from './containers/Home';
 import Create from './containers/Create';
 import { flatternArr, ID, parseToYearAndMonth } from './utility';
+import { AppContext } from './Appcontext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-export const AppContext = React.createContext();
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -17,11 +19,14 @@ class App extends React.Component {
       isLoading: false,
       currentDate: parseToYearAndMonth(),
     };
+    const withLoading = cb => (...args) => {
+      this.setState({
+        isLoading: true,
+      });
+      return cb(...args);
+    };
     this.actions = {
-      getInitalData: async () => {
-        this.setState({
-          isLoading: true,
-        });
+      getInitalData: withLoading(async () => {
         const { currentDate } = this.state;
         const getURLWithData = `/items?monthCategory=${currentDate.year}-${currentDate.month}&_sort=timestamp&_order=desc`;
         const results = await Promise.all([axios.get('/categories'), axios.get(getURLWithData)]);
@@ -32,11 +37,39 @@ class App extends React.Component {
           isLoading: false,
         });
         return items;
-      },
-      selectNewMonth: async (year, month) => {
-        this.setState({
-          isLoading: true,
-        });
+      }),
+      getEditData: withLoading(async (id) => {
+        const { items, categories } = this.state;
+        const promiseArr = [];
+        if (Object.keys(categories).length === 0) {
+          promiseArr.push(axios.get('/categories'));
+        }
+        const itemAlreadyFeched = Object.keys(items).indexOf(id) > -1;
+        if (id && !itemAlreadyFeched) {
+          const getURLWithData = `/items/${id}`;
+          promiseArr.push(axios.get(getURLWithData));
+        }
+        const [fetchedCategories, editItem] = await Promise.all(promiseArr);
+        const finalCategories = fetchedCategories ? flatternArr(fetchedCategories.data) : categories;
+        const finalItem = editItem ? editItem.data : items[id];
+        if (id) {
+          this.setState({
+            categories: finalCategories,
+            isLoading: false,
+            items: { ...this.state.items, [id]: finalItem },
+          });
+        } else {
+          this.setState({
+            categories: finalCategories,
+            isLoading: false,
+          });
+        }
+        return {
+          categories: finalCategories,
+          editItem: finalItem,
+        };
+      }),
+      selectNewMonth: withLoading(async (year, month) => {
         const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`;
         const items = await axios.get(getURLWithData);
         this.setState({
@@ -45,40 +78,41 @@ class App extends React.Component {
           isLoading: false,
         });
         return items;
-      },
-      deleteItem: async (item) => {
-        this.setState({
-          isLoading: true,
-        });
+      }),
+      deleteItem: withLoading(async (item) => {
         const deleteItem = await axios.delete(`/items/${item.id}`);
         delete this.state.items[item.id];
         this.setState({
-          // eslint-disable-next-line react/no-access-state-in-setstate
           items: this.state.items,
           isLoading: false,
         });
         return deleteItem;
-      },
-      createItem: (data, categoryId) => {
+      }),
+      createItem: withLoading(async (data, categoryId) => {
         const newId = ID();
         const parsedDate = parseToYearAndMonth(data.date);
         data.monthCategory = `${parsedDate.year}-${parsedDate.month}`;
         data.timestamp = new Date(data.date).getTime();
-        const newItem = { ...data, id: newId, cid: categoryId };
+        const newItem = await axios.post('/items', { ...data, id: newId, cid: categoryId });
         this.setState(prevState => ({
           items: { ...prevState.items, [newId]: newItem },
+          isLoading: false,
         }));
-      },
-      updateItem: (item, updatedCategoryId) => {
-        const modifiedItem = {
+        return newItem;
+      }),
+      updateItem: withLoading(async (item, updatedCategoryId) => {
+        const updatedData = {
           ...item,
           cid: updatedCategoryId,
           timestamp: new Date(item.date).getTime(),
         };
+        const modifiedItem = await axios.put(`/items/${item.id}`, updatedData);
         this.setState(prevState => ({
-          items: { ...prevState.items, [modifiedItem.id]: modifiedItem },
+          items: { ...prevState.items, [modifiedItem.id]: modifiedItem.data },
+          isLoading: false,
         }));
-      },
+        return modifiedItem.data;
+      }),
     };
   }
 
