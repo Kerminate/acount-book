@@ -34,5 +34,8 @@
     "Description": "",
     "Author": "kepeilin",
     "Date": "Do not edit" // 文件创建时间(不变)
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   }
 }

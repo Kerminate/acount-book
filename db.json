@@ -1,5 +1,6 @@
 {
-  "categories": [{
+  "categories": [
+    {
       "name": "旅行",
       "iconName": "ios-plane",
       "id": "1",
@@ -96,7 +97,8 @@
       "type": "income"
     }
   ],
-  "items": [{
+  "items": [
+    {
       "title": "再次更新标题",
       "price": 2000,
       "date": "2018-09-15",
@@ -203,6 +205,15 @@
       "id": "_qmatbbw13",
       "cid": "6",
       "timestamp": 1562851182965
+    },
+    {
+      "title": "12",
+      "price": 12,
+      "date": "0012-12-12",
+      "monthCategory": "12-12",
+      "timestamp": -61758633600000,
+      "id": "_nction ra",
+      "cid": "6"
     }
   ]
 }

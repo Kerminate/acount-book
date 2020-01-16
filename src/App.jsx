@@ -1,16 +1,16 @@
 /* eslint-disable react/no-access-state-in-setstate */
 /* eslint-disable react/no-unused-state */
-import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import axios from 'axios';
 import Home from './containers/Home';
 import Create from './containers/Create';
-import { flatternArr, ID, parseToYearAndMonth } from './utility';
-import { AppContext } from './Appcontext';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import { flatternArr, parseToYearAndMonth, ID } from './utility';
+import { AppContext } from './AppContext';
 
-class App extends React.Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -36,7 +36,7 @@ class App extends React.Component {
           categories: flatternArr(categories.data),
           isLoading: false,
         });
-        return items;
+        return { items, categories };
       }),
       getEditData: withLoading(async (id) => {
         const { items, categories } = this.state;
@@ -44,13 +44,15 @@ class App extends React.Component {
         if (Object.keys(categories).length === 0) {
           promiseArr.push(axios.get('/categories'));
         }
-        const itemAlreadyFeched = Object.keys(items).indexOf(id) > -1;
-        if (id && !itemAlreadyFeched) {
-          const getURLWithData = `/items/${id}`;
-          promiseArr.push(axios.get(getURLWithData));
+        const itemAlreadyFetched = !!(Object.keys(items).indexOf(id) > -1);
+        if (id && !itemAlreadyFetched) {
+          const getURLWithID = `/items/${id}`;
+          promiseArr.push(axios.get(getURLWithID));
         }
         const [fetchedCategories, editItem] = await Promise.all(promiseArr);
-        const finalCategories = fetchedCategories ? flatternArr(fetchedCategories.data) : categories;
+
+        const finalCategories = fetchedCategories
+          ? flatternArr(fetchedCategories.data) : categories;
         const finalItem = editItem ? editItem.data : items[id];
         if (id) {
           this.setState({
@@ -94,42 +96,37 @@ class App extends React.Component {
         data.monthCategory = `${parsedDate.year}-${parsedDate.month}`;
         data.timestamp = new Date(data.date).getTime();
         const newItem = await axios.post('/items', { ...data, id: newId, cid: categoryId });
-        this.setState(prevState => ({
-          items: { ...prevState.items, [newId]: newItem },
+        this.setState({
+          items: { ...this.state.items, [newId]: newItem.data },
           isLoading: false,
-        }));
-        return newItem;
+        });
+        return newItem.data;
       }),
       updateItem: withLoading(async (item, updatedCategoryId) => {
-        const updatedData = {
+        const modifiedItem = {
           ...item,
           cid: updatedCategoryId,
           timestamp: new Date(item.date).getTime(),
         };
-        const modifiedItem = await axios.put(`/items/${item.id}`, updatedData);
-        this.setState(prevState => ({
-          items: { ...prevState.items, [modifiedItem.id]: modifiedItem.data },
+        const updatedItem = await axios.put(`/items/${modifiedItem.id}`, modifiedItem);
+        this.setState({
+          items: { ...this.state.items, [modifiedItem.id]: modifiedItem },
           isLoading: false,
-        }));
-        return modifiedItem.data;
+        });
+        return updatedItem.data;
       }),
     };
   }
 
   render() {
     return (
-      <AppContext value={{
+      <AppContext.Provider value={{
         state: this.state,
         actions: this.actions,
       }}
       >
         <Router>
           <div className="App">
-            <ul>
-              <Link to="/">Home</Link>
-              <Link to="/create">Create</Link>
-              <Link to="/edit/10">Edit</Link>
-            </ul>
             <div className="container pb-5">
               <Route path="/" exact component={Home} />
               <Route path="/create" component={Create} />
@@ -137,7 +134,7 @@ class App extends React.Component {
             </div>
           </div>
         </Router>
-      </AppContext>
+      </AppContext.Provider>
     );
   }
 }

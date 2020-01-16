@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppContext } from './Appcontext';
+import { AppContext } from './AppContext';
 
 const withContext = Component => props => (
   <AppContext.Consumer>
